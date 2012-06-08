@@ -20,7 +20,7 @@
 */
 
 (function ($) {
-  $.fn.timePicker = function (options) {
+	$.fn.timePicker = function (options) {
 		// Build main options before element iteration
 		var settings = $.extend({}, $.fn.timePicker.defaults, options);
 
@@ -105,18 +105,25 @@
 			$tpDiv.show();
 
 			// Try to find a time in the list that matches the entered time.
-			var time = elm.value ? timeStringToDate(elm.value, settings) : startTime;
-			var startMin = startTime.getHours() * 60 + startTime.getMinutes();
-			var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
-			var steps = Math.round(min / settings.step);
-			var roundTime = normaliseTime(new Date(0, 0, 0, 0, (steps * settings.step + startMin), 0));
-			roundTime = (startTime < roundTime && roundTime <= endTime) ? roundTime : startTime;
-			var $matchedTime = $("li:contains(" + formatTime(roundTime, settings) + ")", $tpDiv);
+			var $matchedTime;
+			if (elm.value !== settings.defaultLabel) {
+				var time = elm.value ? timeStringToDate(elm.value, settings) : startTime;
 
+				var startMin = startTime.getHours() * 60 + startTime.getMinutes();
+				var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
+				var steps = Math.round(min / settings.step);
+				var roundTime = normaliseTime(new Date(0, 0, 0, 0, (steps * settings.step + startMin), 0));
+				roundTime = (startTime < roundTime && roundTime <= endTime) ? roundTime : startTime;
+				$matchedTime = $("li:contains(" + formatTime(roundTime, settings) + ")", $tpDiv);
+			} else {
+
+				$matchedTime = $("li:contains(" + settings.defaultLabel + ")", $tpDiv);
+			}
 			if ($matchedTime.length) {
 				$matchedTime.addClass(selectedClass);
 				// Scroll to matched time.
 				$tpDiv[0].scrollTop = $matchedTime[0].offsetTop;
+
 			}
 			return true;
 		};
